@@ -1,0 +1,77 @@
+﻿@model IEnumerable<ShoppingCart.Models.Users>
+
+<h2>User List</h2>
+
+<table class="table table-striped table-bordered table-hover" id="UserTable">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Name)</th>
+            <th>@Html.DisplayNameFor(model => model.EmailId)</th>
+            <th>@Html.DisplayNameFor(model => model.Address)</th>
+            <th>@Html.DisplayNameFor(model => model.PhoneNo)</th>
+            <th>@Html.DisplayNameFor(model => model.status)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                <td>@Html.DisplayFor(modelItem => item.EmailId)</td>
+                <td>@Html.DisplayFor(modelItem => item.Address)</td>
+                <td>@Html.DisplayFor(modelItem => item.PhoneNo)</td>
+                @if (item.status)
+                {
+                    <td class="text-info">Active</td>
+                }
+                else
+                {
+                    <td class="text-danger">Inactive</td>
+                }
+                <td>
+                    @if (item.HasOrder)
+                    {
+                        <a href="@Url.Action("GetOrderByUser", "Order", new { id = item.UserId })" class="btn btn-info">OrderDetails</a>
+                    }
+                    else
+                    {
+                        <span class="alert-danger">No Orders Found</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+    <style>
+        /* Your existing styles here */
+    </style>
+}
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var table = $('#UserTable').DataTable({
+                "paging": true,
+                "searching": true,
+                "ordering": true,
+                "columnDefs": [
+                    {
+                        "targets": [4, 5], // Disable sorting for the 5th and 6th columns
+                        "orderable": false
+                    }
+                ]
+            });
+
+            // Custom filter for specific column (UserName)
+            $('#filterUserName').on('keyup', function () {
+                table.column(0).search(this.value).draw();
+            });
+        });
+    </script>
+}

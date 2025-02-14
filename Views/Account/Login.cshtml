@@ -1,0 +1,160 @@
+﻿@model ShoppingCart.Models.Login
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> <!-- FontAwesome -->
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa; /* Light background color for the entire page */
+            margin: 20px;
+            padding: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            max-width: 400px;
+            width: 100%;
+            padding: 20px;
+            background-color: #ffffff; /* White background for the container */
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h3 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative; /* Needed for positioning the eye icon */
+        }
+
+        .control-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #495057;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+            .form-control:focus {
+                border-color: #80bdff;
+                outline: none;
+                box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25);
+            }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            color: #fff;
+            background-color: #007bff;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+            .btn:hover {
+                background-color: #0056b3;
+                transform: translateY(-2px);
+            }
+
+        .alert {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-link {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+            .text-link:hover {
+                text-decoration: underline;
+            }
+
+        .eye-icon {
+            position: absolute;
+            right: 12px;
+            top: 70%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 18px;
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3>Login</h3>
+        <form class="form-horizontal" class=" was-validated" asp-action="Login" onsubmit="return validatetable()">
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+            <div class="form-group">
+                <label class="control-label" for="id_Email">Email</label>
+                <input asp-for="EmailId" class="form-control" type="text" id="id_Email" required placeholder="Email" />
+                <span asp-validation-for="EmailId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label" for="id_password">Password</label>
+                <input asp-for="Password" class="form-control" type="password" id="id_password" required placeholder="Password"/>
+                <i class="fa fa-eye eye-icon" id="togglePassword"></i> <!-- Eye icon here -->
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group text-center">
+                <input type="submit" value="Login" class="btn" />
+            </div>
+        </form>
+        <div class="text-center mt-4">
+            <p>New User?</p>
+            <a class="text-link" asp-controller="User" asp-action="CreateUser">Register Here!</a>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <!-- Bootstrap JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="~/js/site.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#togglePassword').on('click', function () {
+                var passwordField = $('#id_password');
+                var type = passwordField.attr('type') === 'password' ? 'text' : 'password';
+                passwordField.attr('type', type);
+                $(this).toggleClass('fa-eye fa-eye-slash');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ShoppingCart</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ShoppingCart.styles.css" asp-append-version="true" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+    <!-- DataTables Buttons CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css" />
+    @RenderSection("Styles", required: false)
+    <style>
+        .navbar-custom {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .navbar-nav-custom {
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+    @{
+        var userRole = HttpContextAccessor.HttpContext.Session.GetString("Role");
+        var UserEmail = HttpContextAccessor.HttpContext.Session.GetString("Email");
+        var UserId = HttpContextAccessor.HttpContext.Session.GetInt32("UserId");
+    }
+    <header>
+        
+        @if (userRole == "User" || userRole == "SuperAdmin")
+         {
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom box-shadow mb-3 navbar-custom">
+            <div class="container-fluid">
+               
+               @*  <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Product">
+                    <img id="logoImage" alt="ShoppingCart Logo" style="height: 40px;" />
+                </a> *@
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    @if (userRole == "SuperAdmin")
+                    {
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Order" asp-action="GetAllOrderDetails">Order List</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="User" asp-action="UserList">User List</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Product" asp-action="ProductList">Product List</a>
+                            </li>
+                        </ul>
+                    }
+
+                    @if (userRole == "User")
+                    {
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Product">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Cart" asp-action="Index">Cart</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    My Account
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="User" asp-action="Profile" asp-route-id="@UserId">Edit Profile</a></li>
+                                    <li >
+                                        <a class="dropdown-item" asp-area="" asp-controller="Order" asp-action="UserOrderDetails">Order Details</a>
+                                    </li>
+                                </ul>
+                            </li>
+                           
+                        </ul>
+                    }
+
+
+                    @if (userRole == "User" || userRole == "SuperAdmin")
+                    {
+                            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center">
+                                <li class="nav-item me-3">
+                                    <!-- Added margin-end for spacing -->
+                                    <span class="navbar-text text-light">Welcome @UserEmail</span>
+                                </li>
+                                <li class="nav-item">
+                                    <form id="logoutForm" method="post" asp-action="LogOut" asp-controller="Account" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="button" onclick="confirmLogout()" class="btn btn-link text-light">Logout</button>
+                                    </form>
+                                </li>
+                            </ul>
+
+                    }
+                </div>
+            </div>
+        </nav>
+        }
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-idletimer@1.0.0/dist/idle-timer.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var logoElement = document.getElementById('logoImage');
+            if (logoElement) {
+                // Set the image source dynamically
+                logoElement.src = '/images/pop-art-girl-holding-shopping-bags_88138-217.avif';
+            } else {
+                console.error('Logo image element not found');
+            }
+        });
+
+        $(document).ready(function () {
+            $.idleTimer(300000); // 5 minutes
+
+            $(document).on("idle.idleTimer", function (event, elem, obj) {
+                console.log("User is idle.");
+                alert("You have been inactive for 5 minutes.");
+                window.location.href = '/Account/Login';
+            });
+
+            $(document).on("active.idleTimer", function (event, elem, obj) {
+                console.log("User is active again.");
+            });
+
+            var successMessage = '@TempData["success"]';
+            var errorMessage = '@TempData["error"]';
+
+            if (successMessage) {
+                toastr.success(successMessage);
+            }
+
+            if (errorMessage) {
+                toastr.error(errorMessage);
+            }
+        });
+
+        function confirmLogout() {
+            if (confirm("Are you sure you want to log out?")) {
+                document.getElementById('logoutForm').submit();
+            }
+        }
+    </script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

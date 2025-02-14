@@ -1,0 +1,103 @@
+﻿@model ShoppingCart.Models.Product
+
+@{
+    ViewData["Title"] = "Create Product";
+}
+
+@if (TempData["success"] != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            showAlert('@TempData["success"]');
+            // Reset the form fields after displaying the alert
+            document.getElementById('createProductForm').reset();
+            document.getElementById('imagePreview').innerHTML = ''; // Clear image preview
+        };
+    </script>
+}
+
+<div class="container">
+    <h4 class="text-center mb-4">Create Product</h4>
+    <hr />
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["Error"]
+        </div>
+    }
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <form asp-action="CreateProduct" id="createProductForm" enctype="multipart/form-data">
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="ProductName" class="form-label">Product Name</label>
+                    <input asp-for="ProductName" class="form-control" required />
+                    <span asp-validation-for="ProductName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="PricePerQnt" class="form-label">Price</label>
+                    <input asp-for="PricePerQnt" class="form-control" type="number" step="0.01" required />
+                    <span asp-validation-for="PricePerQnt" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="AvailableQnty" class="form-label">Quantity</label>
+                    <input asp-for="AvailableQnty" class="form-control" type="number" required />
+                    <span asp-validation-for="AvailableQnty" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Description" class="form-label">Description</label>
+                    <textarea asp-for="Description" class="form-control" rows="4" required></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="ProductImagefile" class="form-label">Choose Image File:</label>
+                    <input asp-for="ProductImagefile" class="form-control-file" id="imageUpload" accept="image/*" required />
+                    <span asp-validation-for="ProductImagefile" class="text-danger"></span>
+                </div>
+
+                <div id="imagePreview" class="mb-3"></div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Create</button>
+                    <button type="reset" class="btn btn-secondary">Reset</button>
+                </div>
+            </form>
+            <div class="mb-3">
+                <a class="btn btn-primary" asp-controller="Product" asp-action="ProductList">Back to ProductList</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('imageUpload').addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.maxWidth = '60%';
+                    img.classList.add('img-thumbnail');
+                    document.getElementById('imagePreview').innerHTML = '';
+                    document.getElementById('imagePreview').appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                document.getElementById('imagePreview').innerHTML = 'No image selected';
+            }
+        });
+
+        document.querySelector('button[type="reset"]').addEventListener('click', function () {
+            document.getElementById('imagePreview').innerHTML = ''; // Clear the image preview
+        });
+    </script>
+}

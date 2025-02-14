@@ -1,0 +1,141 @@
+﻿@* @model IEnumerable<ShoppingCart.Models.Product>
+
+@if (TempData["success"] != null)
+{
+    <script type="text/javascript">
+        alert('@TempData["success"]');
+    </script>
+}
+
+<h4 class="mb-4">Purchase Products here </h4>
+
+<!-- Search Box -->
+<div class="mb-4">
+    <input type="text" id="searchBox" class="form-control" placeholder="Search by Product Name" />
+</div>
+
+<div class="container">
+    <div class="row" id="productList">
+        @foreach (var item in Model)
+        {
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4 product-card" data-product-name="@item.ProductName">
+                <div class="card">
+                    <img src="~/Images/@item.ProductImage" class="card-img-top" alt="Product Image" style="height: 180px; object-fit: cover;" />
+                    <div class="card-body">
+                        <h5 class="card-title">@item.ProductName</h5>
+                        <p class="card-text">Price: @item.PricePerQnt</p>
+                        <div class="d-flex justify-content-between">
+                            <a class="btn btn-primary" href="@Url.Action("ViewProductDetails", "Product", new { id = item.ProductId })">View Details</a>
+                                          
+                            <a class="btn btn-success" href="@Url.Action("AddToCart", "Cart", new { id = item.ProductId })">Add to Cart</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- JavaScript for Client-Side Filtering -->
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchBox = document.getElementById('searchBox');
+        const productList = document.getElementById('productList');
+        const productCards = productList.getElementsByClassName('product-card');
+
+        searchBox.addEventListener('input', function () {
+            const query = searchBox.value.toLowerCase();
+
+            for (let i = 0; i < productCards.length; i++) {
+                const card = productCards[i];
+                const productName = card.getAttribute('data-product-name').toLowerCase();
+
+                if (productName.includes(query)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            }
+        });
+    });
+</script>
+ *@
+ @model IEnumerable<ShoppingCart.Models.Product>
+
+@if (TempData["success"] != null)
+{
+    <script type="text/javascript">
+        alert('@TempData["success"]');
+    </script>
+}
+
+<h4 class="mb-4">Purchase Products here </h4>
+
+<!-- Search Box -->
+<div class="mb-4">
+    <input type="text" id="searchBox" class="form-control" placeholder="Search by Product Name" />
+</div>
+
+<div class="container">
+    <div class="row" id="productList">
+        @foreach (var item in Model)
+        {
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4 product-card"
+                 data-product-name="@item.ProductName"
+                 data-quantity="@item.AvailableQnty">
+                <div class="card">
+                    <img src="~/Images/@item.ProductImage" class="card-img-top" alt="Product Image" style="height: 180px; object-fit: cover;" />
+                    <div class="card-body">
+                        <h5 class="card-title">@item.ProductName</h5>
+                        <p class="card-text">Price: @item.PricePerQnt</p>
+                        <div class="d-flex justify-content-between">
+                            <a class="btn btn-primary" href="@Url.Action("ViewProductDetails", "Product", new { id = item.ProductId })">View Details</a>
+@*                             <a class="btn btn-success  add-to-cart-btn" href="@Url.Action("AddToCart", "Cart", new { id = item.ProductId })">Add to Cart</a>
+ *@                            <a class="btn btn-success add-to-cart-btn" data-product-id="@item.ProductId" href=" @Url.Action("AddToCart", "Cart", new { id = item.ProductId })">Add to Cart</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- JavaScript for Client-Side Filtering and Add to Cart Validation -->
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchBox = document.getElementById('searchBox');
+        const productList = document.getElementById('productList');
+        const productCards = productList.getElementsByClassName('product-card');
+
+        // Search functionality
+        searchBox.addEventListener('input', function () {
+            const query = searchBox.value.toLowerCase();
+
+            for (let i = 0; i < productCards.length; i++) {
+                const card = productCards[i];
+                const productName = card.getAttribute('data-product-name').toLowerCase();
+
+                if (productName.includes(query)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            }
+        });
+
+        // Add to Cart button functionality
+        const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+
+        addToCartButtons.forEach(button => {
+            button.addEventListener('click', function (event) {
+                const card = this.closest('.product-card');
+                const quantity = parseInt(card.getAttribute('data-quantity'), 10);
+
+                if (quantity === 0) {
+                    event.preventDefault(); // Prevent the default link behavior
+                    alert('This product is not available right now.');
+                }
+            });
+        });
+    });
+</script>
