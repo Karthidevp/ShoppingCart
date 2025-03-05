@@ -18,11 +18,14 @@ namespace ShoppingCart.Controllers
         }
 
         #endregion
+
+        #region Get User List
         public async Task<IActionResult> UserList()
         {
             var Userlist = await _userservice.GetUserListAsync();
             return View(Userlist);
         }
+        #endregion
 
 
         [HttpGet]
